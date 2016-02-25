@@ -13,7 +13,7 @@
       // ----------------------------------- 
       $rootScope.app = {
         name: 'ArquitetaWeb',
-        description: 'Leilão - Sistema para Leilão',
+        description: 'Ponto API - API para Cartão Ponto DB1',
         year: ((new Date()).getFullYear()),
         layout: {
           isFixed: true,
