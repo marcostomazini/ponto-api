@@ -104,7 +104,6 @@ exports.efetuarEntrada = function(ponto) {
 
 exports.efetuarSaida = function(ponto) {
 	var formData = templatePonto(ponto.usuario, ponto.senha, "S");
-	console.log(formData);
 	return sendData(formData);
 };
 
@@ -113,7 +112,6 @@ exports.efetuarSaida = function(ponto) {
  */
 exports.relatorioSimples = function(ponto) {
 	var formData = templateRelatorio(ponto.usuario, ponto.senha, "S"); 
-	console.log(formData);
 	return sendData(formData);
 };
 
@@ -122,6 +120,5 @@ exports.relatorioSimples = function(ponto) {
  */
 exports.relatorioConferenciaTaskPonto = function(ponto) {
 	var formData = templateRelatorio(ponto.usuario, ponto.senha, "C"); // c = conferencia
-	console.log(formData);
 	return sendData(formData);
 };
