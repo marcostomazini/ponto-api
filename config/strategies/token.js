@@ -16,10 +16,11 @@ module.exports = function() {
 			}, function(err, user) {
 				if (err) {
 					return done(err);
-				}
+				}				
+
 				if (!user) {
 					return done(null, false, {
-						message: 'Token incorreto',
+						message: 'Token Incorreto, comunique marcos.tomazini@gmail.com e gere um novo token',
 						type: 'error'
 					});
 				}				

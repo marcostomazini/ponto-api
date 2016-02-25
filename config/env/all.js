@@ -2,13 +2,13 @@
 
 module.exports = {
 	app: {
-		title: 'Leilão - Sistema para Leilão',
-		description: 'Leilão',
-		keywords: 'leilao, carro, veiculos'
+		title: 'Ponto Api',
+		description: 'Ponto Api',
+		keywords: 'ponto, api, db1'
 	},
 	port: process.env.PORT || 3000,
 	templateEngine: 'swig',
-	sessionSecret: 'ARQUITETAWEB2015',
+	sessionSecret: 'ARQUITETAWEB2016',
 	sessionCollection: 'sessions',
 	assets: {
 		lib: {

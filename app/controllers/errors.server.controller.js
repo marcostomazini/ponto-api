@@ -42,3 +42,31 @@ exports.getErrorMessage = function(err) {
 
 	return message;
 };
+
+/**
+ * Get the error message from error object
+ */
+exports.executeValidation = function(ponto, relatorio) {
+	var message = '';
+
+	if (ponto == null) {
+		message = 'nao foi encontrado parametros'
+	} else if (ponto.tipo == '') {
+		if (relatorio)
+			message = 'faltou o tipo (simples / conferencia)'
+		else 
+			message = 'faltou o tipo (entrada / saida)'
+	} else if (ponto.usuario == '') {
+		message = 'faltou o usuario';
+	} else if (ponto.senha == '') {
+		message = 'faltou a senha';
+	} else if ((ponto.tipo.indexOf('entrada') == -1 && ponto.tipo.indexOf('saida') == -1) && 
+			  (ponto.tipo.indexOf('simples') == -1 && ponto.tipo.indexOf('conferencia') == -1)) {
+		if (relatorio)
+			message = 'tipo incorreto esperado (simples / conferencia) -> ' + ponto.tipo;
+		else
+			message = 'tipo incorreto esperado (entrada / saida)';
+	}
+
+	return message;
+};

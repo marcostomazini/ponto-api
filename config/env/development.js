@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-	db: 'mongodb://localhost/leilao-dev',
+	db: 'mongodb://localhost/ponto-dev',
 	app: {
-		title: 'Leilão - Development Environment'
+		title: 'Ponto - Development Environment'
 	},
 	google: {
 		clientID: process.env.GOOGLE_ID || '64358772177-lqtq513bcp3kuve4rqn91gvqdrrbefel.apps.googleusercontent.com',
