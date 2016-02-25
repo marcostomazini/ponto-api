@@ -1843,8 +1843,8 @@ angular.module('users').factory('UsuariosSistema', ['$resource',
 angular.module('usuarios-mobile').run(['Menus',
 	function(Menus) {
 		// Set top bar menu items
-		Menus.addMenuItem('sidebar', 'Leilões', 'usuarios-mobile', 'dropdown', '/usuarios-mobile(/.*)?', false, null, 20, 'icon-users');
-		Menus.addSubMenuItem('sidebar', 'usuarios-mobile', 'Listar leilões', 'usuarios-mobile');
+		//Menus.addMenuItem('sidebar', 'Leilões', 'usuarios-mobile', 'dropdown', '/usuarios-mobile(/.*)?', false, null, 20, 'icon-users');
+		//Menus.addSubMenuItem('sidebar', 'usuarios-mobile', 'Listar leilões', 'usuarios-mobile');
 	}
 ]);
 'use strict';
@@ -2443,7 +2443,7 @@ angular.module('usuarios-mobile').factory('UsuariosMobile', ['$resource',
 angular.module('veiculos').run(['Menus',
 	function(Menus) {
 		// Set top bar menu items
-		Menus.addMenuItem('sidebar', 'Veiculos', 'pesquisa-veiculos', 'dropdown', '/pesquisa-veiculos(/.*)?', false, null, 20, 'icon-basket-loaded');
+		//Menus.addMenuItem('sidebar', 'Veiculos', 'pesquisa-veiculos', 'dropdown', '/pesquisa-veiculos(/.*)?', false, null, 20, 'icon-basket-loaded');
 	}
 ]);
 'use strict';
