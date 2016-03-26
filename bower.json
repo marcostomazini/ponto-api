@@ -1,10 +1,10 @@
 {
-  "name": "unimarketing",
+  "name": "db1pontoapi",
   "version": "1.0.0",
   "authors": [
     "@marcos_tomazini"
   ],
-  "description": "UniMarketing",
+  "description": "DB1PontoApi",
   "main": "index.html",
   "keywords": [
     "bootstrap",

@@ -48,4 +48,4 @@ app.set('socketio', socket);
 exports = module.exports = app;
 
 // Logging initialization
-console.log('UniMarketing application started on port ' + config.port);
+console.log('DB1 Ponto API application started on port ' + config.port);
