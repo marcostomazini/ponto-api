@@ -5,7 +5,8 @@
  */
 var querystring = require('querystring'),
 	request = require('request'),
-	Promise = require("bluebird");
+	Promise = require("bluebird"),
+	tratarRetorno = require('./tratamento-retorno.server.controller');
 
 /**
  * Get unique error field name
@@ -35,10 +36,6 @@ var templatePonto = function(usuario, senha, tipo) {
 		+ "&" +
 		querystring.escape("login:_id15")+"="+querystring.escape("LOGIN")
 		+ "&" +
-		//querystring.escape("login:_id17")+"="+querystring.escape("RELATÓRIO")
-		//+ "&" +
-		//querystring.escape("login:_id19")+"="+querystring.escape("CONFERÊNCIA TASK E PONTO")
-		//+ "&" +
 		querystring.escape("login_SUBMIT")+"="+querystring.escape("1")
 		+ "&" +
 		querystring.escape("login:_idcl")+"="+querystring.escape("")
@@ -73,9 +70,9 @@ var templateRelatorio = function(usuario, senha, tipo) {
 	return formData;		
 };
 
-var sendData = function(formData) {
+var sendData = function(formData, tipo) {
 	var contentLength = formData.length;
-
+	
 	return new Promise(function (resolve, reject) {
         request({
 			headers: {
@@ -86,10 +83,16 @@ var sendData = function(formData) {
 			body: formData,
 			method: 'POST'
 		}, function (err, res, body) {
-		    resolve({
-				success: true,
-				resultado: body
-			});
+			if (res.statusCode == 500) {
+				resolve({
+					success: false,
+					resultado: 'Erro Interno (server db1)',
+					body: body
+				});	
+			} else {
+				var retorno = tratarRetorno.execute(body, tipo);
+		    	resolve(retorno);
+			}
 		});
     });	
 };
@@ -99,12 +102,12 @@ var sendData = function(formData) {
  */
 exports.efetuarEntrada = function(ponto) {
 	var formData = templatePonto(ponto.usuario, ponto.senha, "E");
-	return sendData(formData);	
+	return sendData(formData, 'ponto');	
 };
 
 exports.efetuarSaida = function(ponto) {
 	var formData = templatePonto(ponto.usuario, ponto.senha, "S");
-	return sendData(formData);
+	return sendData(formData, 'ponto');
 };
 
 /**
@@ -112,13 +115,21 @@ exports.efetuarSaida = function(ponto) {
  */
 exports.relatorioSimples = function(ponto) {
 	var formData = templateRelatorio(ponto.usuario, ponto.senha, "S"); 
-	return sendData(formData);
+
+	return sendData(formData, 'simples');
 };
 
 /**
  * c = conferencia
  */
 exports.relatorioConferenciaTaskPonto = function(ponto) {
-	var formData = templateRelatorio(ponto.usuario, ponto.senha, "C"); // c = conferencia
-	return sendData(formData);
+	var formData = templateRelatorio(ponto.usuario, ponto.senha, "E"); // c = conferencia	
+
+	// return new Promise(function (resolve, reject) {
+	// 	var tee = '<?xml version="1.0" encoding="utf-8"?> <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" > <html><head><title></title><title>DB1 | Ponto</title><link rel="STYLESHEET" href="/ponto/css/style2.css" type="text/css" /><link rel="STYLESHEET" href="/ponto/css/listagem.css" type="text/css" /></head><body><div><table style="font-family: Verdana; width: 550px;" border="0" cellspacing="0" id="impRelIndividual"><tbody><tr><td colspan="2" align="center" style="font-size: 12pt;"><b>Relatório de Conferência de Horas</b></td></tr><tr><td height="10px"></td></tr><tr><td colspan="2" align="left" style="font-size: 9pt;">Período : 01/03/2016 à 25/03/2016</td></tr><tr><td colspan="2" align="left" style="font-size: 9pt;">Colaborador:MARCOS.TOMAZINI</td></tr><tr><td height="5px"></td></tr><tr><td colspan="2"><table width="100%" class="tabExterna"><thead><tr><th><span class="align:center; width:100px;">Data</span></th><th>Horas Ponto</th><th>Horas Task</th><th>Ponto - Task</th></tr></thead><tfoot><tr><td class="rodape">TOTAL</td><td class="rodape">144:56:51</td><td class="rodape">100:42:00</td><td class="rodape">44:14:51</td></tr></tfoot><tbody id="_id12:tbody_element"><tr class="linha1"><td class="colCentro"><span class="fonteLinha">01/03/2016</span></td><td class="colCentro">10:08:46</td><td class="colCentro">10:09:00</td><td class="colCentro">-00:00:14</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">02/03/2016</span></td><td class="colCentro">08:21:59</td><td class="colCentro">08:22:12</td><td class="colCentro">-00:00:13</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">03/03/2016</span></td><td class="colCentro">08:38:27</td><td class="colCentro">08:38:24</td><td class="colCentro">00:00:03</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">04/03/2016</span></td><td class="colCentro">08:38:42</td><td class="colCentro">08:38:24</td><td class="colCentro">00:00:18</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">07/03/2016</span></td><td class="colCentro">06:19:33</td><td class="colCentro">06:19:48</td><td class="colCentro">-00:00:15</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">08/03/2016</span></td><td class="colCentro">02:45:51</td><td class="colCentro">08:38:24</td><td class="colCentro">-05:52:33</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">09/03/2016</span></td><td class="colCentro">08:41:48</td><td class="colCentro">08:42:00</td><td class="colCentro">-00:00:12</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">10/03/2016</span></td><td class="colCentro">07:56:16</td><td class="colCentro">07:56:24</td><td class="colCentro">-00:00:08</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">11/03/2016</span></td><td class="colCentro">08:40:05</td><td class="colCentro">08:40:12</td><td class="colCentro">-00:00:07</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">14/03/2016</span></td><td class="colCentro">06:56:29</td><td class="colCentro">06:56:24</td><td class="colCentro">00:00:05</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">15/03/2016</span></td><td class="colCentro">07:08:00</td><td class="colCentro">07:07:48</td><td class="colCentro">00:00:12</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">16/03/2016</span></td><td class="colCentro">08:39:44</td><td class="colCentro">04:07:12</td><td class="colCentro">04:32:32</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">17/03/2016</span></td><td class="colCentro">08:27:01</td><td class="colCentro">00:10:12</td><td class="colCentro">08:16:49</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">18/03/2016</span></td><td class="colCentro">08:12:11</td><td class="colCentro">00:10:12</td><td class="colCentro">08:01:59</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">21/03/2016</span></td><td class="colCentro">09:11:52</td><td class="colCentro">04:35:24</td><td class="colCentro">04:36:28</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">22/03/2016</span></td><td class="colCentro">08:43:19</td><td class="colCentro">01:30:00</td><td class="colCentro">07:13:19</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">23/03/2016</span></td><td class="colCentro">09:31:21</td><td class="colCentro">00:00:00</td><td class="colCentro">09:31:21</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">24/03/2016</span></td><td class="colCentro">07:55:27</td><td class="colCentro">00:00:00</td><td class="colCentro">07:55:27</td></tr></tbody></table></td></tr><tr><td height="20px"></td></tr><tr><td colspan="2" align="left" style="font-size: 9pt;">Período : 01/02/2016 à 29/02/2016</td></tr><tr><td colspan="2" align="left" style="font-size: 9pt;">Colaborador:MARCOS.TOMAZINI</td></tr><tr><td height="5px"></td></tr><tr><td colspan="2"><table width="100%" class="tabExterna"><thead><tr><th><span class="align:center; width:100px;">Data</span></th><th>Horas Ponto</th><th>Horas Task</th><th>Ponto - Task</th></tr></thead><tfoot><tr><td class="rodape">TOTAL</td><td class="rodape">172:24:00</td><td class="rodape">172:22:12</td><td class="rodape">00:01:48</td></tr></tfoot><tbody id="_id37:tbody_element"><tr class="linha1"><td class="colCentro"><span class="fonteLinha">01/02/2016</span></td><td class="colCentro">07:24:27</td><td class="colCentro">07:24:36</td><td class="colCentro">-00:00:09</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">02/02/2016</span></td><td class="colCentro">08:43:21</td><td class="colCentro">08:43:12</td><td class="colCentro">00:00:09</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">03/02/2016</span></td><td class="colCentro">07:56:30</td><td class="colCentro">07:56:24</td><td class="colCentro">00:00:06</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">04/02/2016</span></td><td class="colCentro">08:22:59</td><td class="colCentro">08:22:48</td><td class="colCentro">00:00:11</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">05/02/2016</span></td><td class="colCentro">08:13:03</td><td class="colCentro">08:13:12</td><td class="colCentro">-00:00:09</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">08/02/2016</span></td><td class="colCentro">04:42:59</td><td class="colCentro">04:43:12</td><td class="colCentro">-00:00:13</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">10/02/2016</span></td><td class="colCentro">07:49:30</td><td class="colCentro">07:49:12</td><td class="colCentro">00:00:18</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">11/02/2016</span></td><td class="colCentro">08:39:03</td><td class="colCentro">08:39:00</td><td class="colCentro">00:00:03</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">12/02/2016</span></td><td class="colCentro">08:40:49</td><td class="colCentro">08:40:48</td><td class="colCentro">00:00:01</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">15/02/2016</span></td><td class="colCentro">08:29:31</td><td class="colCentro">08:29:24</td><td class="colCentro">00:00:07</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">16/02/2016</span></td><td class="colCentro">08:40:29</td><td class="colCentro">08:40:12</td><td class="colCentro">00:00:17</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">17/02/2016</span></td><td class="colCentro">08:45:41</td><td class="colCentro">08:45:00</td><td class="colCentro">00:00:41</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">18/02/2016</span></td><td class="colCentro">08:40:06</td><td class="colCentro">08:40:12</td><td class="colCentro">-00:00:06</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">19/02/2016</span></td><td class="colCentro">07:55:24</td><td class="colCentro">07:55:12</td><td class="colCentro">00:00:12</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">20/02/2016</span></td><td class="colCentro">02:30:43</td><td class="colCentro">02:30:36</td><td class="colCentro">00:00:07</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">22/02/2016</span></td><td class="colCentro">08:41:43</td><td class="colCentro">08:41:24</td><td class="colCentro">00:00:19</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">23/02/2016</span></td><td class="colCentro">08:39:25</td><td class="colCentro">08:39:36</td><td class="colCentro">-00:00:11</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">24/02/2016</span></td><td class="colCentro">08:39:15</td><td class="colCentro">08:39:00</td><td class="colCentro">00:00:15</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">25/02/2016</span></td><td class="colCentro">08:39:22</td><td class="colCentro">08:39:36</td><td class="colCentro">-00:00:14</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">26/02/2016</span></td><td class="colCentro">07:03:46</td><td class="colCentro">07:03:36</td><td class="colCentro">00:00:10</td></tr><tr class="linha1"><td class="colCentro"><span class="fonteLinha">27/02/2016</span></td><td class="colCentro">05:25:50</td><td class="colCentro">05:25:48</td><td class="colCentro">00:00:02</td></tr><tr class="linha2"><td class="colCentro"><span class="fonteLinha">29/02/2016</span></td><td class="colCentro">09:40:04</td><td class="colCentro">09:40:12</td><td class="colCentro">-00:00:08</td></tr></tbody></table></td></tr><tr><td height="20px"></td></tr><tr><td colspan="2" height="20px"></td></tr><tr><td><div><input type="button" value="Imprimir" id="imprimir" class="bt_cromo" onclick="javascript:window.print();" /></div></td><td align="right"><a href="/ponto/pages/filtroRelPontoTask.jsf" class="linkClass">Voltar</a></td></tr></tbody></table></div><!-- MYFACES JAVASCRIPT --> </body></html>';
+	// 	var teste = tratarRetorno.execute(tee, 'conferencia');
+	// 	resolve(teste);
+ //    });	    
+
+	return sendData(formData, 'conferencia');
 };

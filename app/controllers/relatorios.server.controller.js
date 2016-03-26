@@ -39,10 +39,8 @@ exports.gerar = function(req, res) {
 		if (response.success) {
 			res.json(response);
 		} else {
-			return res.status(400).send({
-				message: 'fuckkkk!!'
-			});
-		}	
+			return res.status(400).send(response);
+		}
 	});
 };
 
